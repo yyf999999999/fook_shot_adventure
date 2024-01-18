@@ -157,13 +157,12 @@ def main():
     Key_R=False
     font=pg.font.Font(None,30)
     img_path="image/product/"
+    flag_img=pg.image.load(f"{img_path}flag.png")
+    flag_size=pg.Vector2(flag_img.get_rect().size)
     me=Character((100,100),img_path+"body.png",img_path+"foot.png",img_path+"bow.png",img_path+"star.png",screen_size)
 
     with open("json/stage.json","r") as file:
         stage=json.load(file)
-    
-    def create_me():
-        me=Character((100,100),img_path+"body.png",img_path+"foot.png",img_path+"bow.png",img_path+"star.png",screen_size)
     
     dart_img=pg.image.load(img_path+"dart.png")
     dart_size=pg.Vector2(dart_img.get_rect().size)
@@ -247,6 +246,7 @@ def main():
         screen.blit(me.foot_img,me.foot_positionR-me.body_position_adjust)
         screen.blit(me.foot_img,me.foot_positionL-me.body_position_adjust)
         screen.blit(me.bow_img_display,me.bow_position-me.body_position_adjust)
+        screen.blit(flag_img,pg.Vector2([2688,-1088])-me.body_position_adjust)
         #screen.blit(text,pg.Vector2([0,0]))
         #pg.draw.line(screen,(154,98,41),pg.Vector2([0,0]),pg.Vector2([100,100]),2)
         
