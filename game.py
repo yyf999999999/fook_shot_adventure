@@ -150,15 +150,18 @@ def main():
     pg.display.set_caption("フックショットアドべンチャー")
     screen_size=pg.Vector2((720,480))
     screen=pg.display.set_mode(screen_size)
+    game_clear=False
     exit_Flag=False
     mouse_Flag_L=False
     frame=0
     Key_L=False
     Key_R=False
-    font=pg.font.Font(None,30)
+    font=pg.font.Font(None,60)
     img_path="image/product/"
     flag_img=pg.image.load(f"{img_path}flag.png")
     flag_size=pg.Vector2(flag_img.get_rect().size)
+    flag_position=pg.Vector2([2704,-1086])
+    game_clear_text=font.render(f"GAME CLEAR",True,(0,0,0))
     me=Character((100,100),img_path+"body.png",img_path+"foot.png",img_path+"bow.png",img_path+"star.png",screen_size)
 
     with open("json/stage.json","r") as file:
@@ -202,7 +205,6 @@ def main():
         screen.fill(pg.Color("#44FFFF"))
         
         #me.body_position_adjust=me.body_position-screen_size/2
-        text=font.render(f"{me.fook_position}",True,(0,0,0))
         if me.fook_display:
             if me.fook_situation=="shot":
                 me.fook_shot(screen_size,stage)
@@ -222,6 +224,8 @@ def main():
             me.bow_angle_calculate(mouse_position)
             me.body_walk(Key_L,Key_R,stage)
             me.body_drop(Key_U,stage)
+        if me.collision_detection(me.body_position,me.body_size,flag_position,flag_size):
+            game_clear=True
         me.body_move(screen_size,stage)
         me.bow_position_calculate()
         me.foot_position_calculate(me.body_position.x/8)
@@ -246,8 +250,11 @@ def main():
         screen.blit(me.foot_img,me.foot_positionR-me.body_position_adjust)
         screen.blit(me.foot_img,me.foot_positionL-me.body_position_adjust)
         screen.blit(me.bow_img_display,me.bow_position-me.body_position_adjust)
-        screen.blit(flag_img,pg.Vector2([2688,-1088])-me.body_position_adjust)
-        #screen.blit(text,pg.Vector2([0,0]))
+        if game_clear:
+            screen.blit(game_clear_text,pg.Vector2([225,100]))
+        else:
+            screen.blit(flag_img,flag_position-me.body_position_adjust)
+        
         #pg.draw.line(screen,(154,98,41),pg.Vector2([0,0]),pg.Vector2([100,100]),2)
         
         pg.display.flip()
@@ -256,6 +263,7 @@ def main():
             me.body_position=pg.Vector2([100,100])
             me.body_acceleration=pg.Vector2([0,0])
             me.fook_display=False
+            game_clear=False
 
         frame+=1
         pg.time.Clock().tick(30)
