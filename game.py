@@ -145,6 +145,14 @@ class Character:
         index=difference.index(min(difference))
         return [xy[index],min(difference),pm[index]]
 
+class guide:
+    def __init__(self,img,angle,pos):
+        self.img=pg.transform.rotate(img,90-angle)
+        self.position=pg.Vector2(pos)
+
+    def draw(self,sc,adjust):
+        sc.blit(self.img,self.position-adjust)
+
 def main():
     pg.init()
     pg.display.set_caption("フックショットアドべンチャー")
@@ -161,8 +169,11 @@ def main():
     flag_img=pg.image.load(f"{img_path}flag.png")
     flag_size=pg.Vector2(flag_img.get_rect().size)
     flag_position=pg.Vector2([2704,-1086])
+    guide_img=pg.image.load(f"{img_path}guide.png")
     game_clear_text=font.render(f"GAME CLEAR",True,(0,0,0))
     me=Character((100,100),img_path+"body.png",img_path+"foot.png",img_path+"bow.png",img_path+"star.png",screen_size)
+    guides=[guide(guide_img,0,(128,320)),guide(guide_img,45,(576,0)),guide(guide_img,90,(1088,-256)),
+            guide(guide_img,-15,(2496,-320)),guide(guide_img,75,(2304,-832))]
 
     with open("json/stage.json","r") as file:
         stage=json.load(file)
@@ -233,6 +244,10 @@ def main():
         #print(me.collision_detection(me.body_position,me.body_size,pg.Vector2(stage[0][0:2]),pg.Vector2(stage[0][2:4])))
 
         me.body_position_adjust=me.body_position-screen_size/2-pg.Vector2([0,64])
+
+        for i in guides:
+            i.draw(screen,me.body_position_adjust)
+
         if me.fook_display:
             me.fook_draw(screen)
 
@@ -245,6 +260,8 @@ def main():
                         screen.blit(dart_img,pg.Vector2(i[0]+n*64,i[1]+j*64)-me.body_position_adjust)
                     else:
                         screen.blit(ground_img,pg.Vector2(i[0]+n*64,i[1]+j*64)-me.body_position_adjust)
+
+
 
         screen.blit(me.body_img,me.body_position-me.body_position_adjust)
         screen.blit(me.foot_img,me.foot_positionR-me.body_position_adjust)
